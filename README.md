@@ -1,6 +1,6 @@
 # Welcome To Bookwis
 
-![Home](bookwis/static/Home.png)
+![Home](static/Home.png)
 
 # BookWis App
 
@@ -29,15 +29,15 @@ BookWis is a web application that allows users to search and explore books using
 
 ## Sign-Up
 
-![Sign-Up](bookwis/static/sign_up.png)
+![Sign-Up](static/sign_up.png)
 
 ## Login
 
-![Login](bookwis/static/Login.png)
+![Login](static/Login.png)
 
 ## Profile
 
-![Profile](bookwis/static/profile.png)
+![Profile](static/profile.png)
 
 ## Getting Started
 
@@ -47,7 +47,7 @@ These instructions will help you set up the BookWis app on your local machine.
 
 Before running the application, make sure you have the following dependencies installed:
 
-- [Python](https://www.python.org/) (>=3.6)
+- [Python](https://www.python.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [pip](https://pip.pypa.io/en/stable/)
 
