@@ -1,0 +1,116 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-5">
+  <div
+    class="container p-4 pt-4 mt-2 mb-2 rounded shadow color4 text-light d-flex align-items-center"
+  >
+    <span
+      class="position-absolute mt-5 ms-4 top-0 start-10 translate-middle badge rounded-pill bg-danger"
+    >
+      <a class="text-light" href="/">Back home</a>
+    </span>
+    <h1 class="text-light workbench flex-grow-1">Book Details.</h1>
+    <a href="your_link_here">
+      <div class="rounded-circle overflow-hidden border border-dark">
+        <img
+          src="{{ url_for('static', filename='default.jpeg') }}"
+          style="height: 50px"
+          alt="Profile Image"
+        />
+      </div>
+    </a>
+  </div>
+
+  <div class="container rounded shadow bg-warning-light p-5 mb-2">
+    <h3 class="workbench">Book details.</h3>
+
+    <!-- Card 1: Book details with thumbnail -->
+    <div class="card mb-3 mt-3">
+      <div class="row g-0">
+        <div class="col-md-4">
+          <a
+            href="{{ item.get('volumeInfo', {}).get('infoLink') }}"
+            target="_blank"
+          >
+            <img
+              src="{{ item.get('volumeInfo', {}).get('imageLinks', {}).get('thumbnail', '#') }}"
+              class="card-img"
+              style="object-fit: cover; height: 400px"
+              alt="Book Cover"
+            />
+          </a>
+          <p class="card-text text-light bg-dark p-4">
+            Available on Google Books.
+          </p>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ item.get('volumeInfo', {}).get('title', 'No Title')
+              |truncate(40) }}
+            </h5>
+            <p class="card-text">
+              <small class="text-body-secondary"
+                >Subtitle: {{ item.get('volumeInfo', {}).get('title', '--')
+                }}</small
+              >
+            </p>
+
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <strong>Author:</strong>
+                <span class="text-body-secondary">
+                  <a
+                    class="text-body-secondary"
+                    href="/author/{{ item.get('volumeInfo', {}).get('authors', ['Unknown Author'])[0] }}"
+                    >{{ item.get('volumeInfo', {}).get('authors', ['Unknown
+                    Author'])[0] }}</a
+                  >
+                </span>
+              </li>
+              <li class="list-group-item">
+                <strong>Publisher:</strong>
+                <span class="text-body-secondary"
+                  >{{ item.get('volumeInfo', {}).get('publisher', ['Unknown
+                  Publisher'])[0] }}</span
+                >
+              </li>
+              <li class="list-group-item">
+                <strong>First Name:</strong>
+                <span class="text-body-secondary">{{ g.user.last_name }}</span>
+              </li>
+            </ul>
+
+            <a href="#" class="card-link btn btn-sm bg-dark text-light"
+              >Edit Profile</a
+            >
+            <a href="#" class="card-link text-body-secondary"
+              ><small>Delete Profile</small></a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Description and Categories -->
+    <div class="card p-3 mb-3">
+      <h5 class="card-title">Book Description</h5>
+      <div class="card-text">
+        {% if item.get('volumeInfo', {}).get('description') %}
+        <small>{{ item.get('volumeInfo', {}).get('description') |safe }}</small>
+        {% else %} No description available. {% endif %}
+      </div>
+    </div>
+
+    <div class="card bg-warning-light p-3">
+      <ul>
+        {% if item.get('volumeInfo', {}).get('categories') %} {% for category in
+        item.get('volumeInfo', {}).get('categories') %}
+        <li class="text-body-secondary"><small>{{ category }}</small></li>
+        {% endfor %} {% else %}
+        <li>No category specified.</li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

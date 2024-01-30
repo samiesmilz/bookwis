@@ -1,0 +1,109 @@
+{% extends 'base.html' %} {% block title %} Bookwis {% endblock %}
+
+<!-- Now the body of the homepage -->
+{% block content %}
+
+<div class="container p-2">
+  <div
+    class="container p-4 pt-4 mt-2 mb-2 rounded shadow color4 text-light d-flex align-items-center"
+  >
+    <span
+      class="position-absolute mt-3 ms-4 top-0 start-10 translate-middle badge rounded-pill bg-danger"
+    >
+      Hi, {{ g.user.first_name }}
+    </span>
+    <h1 class="text-light workbench flex-grow-1">Books by Author</h1>
+    <a href="/profile">
+      <div
+        class="rounded-circle overflow-hidden border border-dark"
+        style="width: 50px; height: 50px"
+      >
+        <img
+          src="{{ g.user.profile_pic if g.user else url_for('static', filename='default.jpeg') }}"
+          class="w-100 h-100"
+          alt="Profile Image"
+        />
+      </div>
+    </a>
+  </div>
+
+  <div class="container rounded shadow bg-warning-light p-5 mb-2">
+    <form action="/search" method="post" style="width: 100%">
+      {{ form.hidden_tag() }} {% for field in form if field.widget.input_type !=
+      'hidden' %}
+      <h2 class="text-dark fw-lighter libre-barcode">{{ field.label }}</h2>
+      <p class="mt-3">
+        {{ field(class_="form-control shadow mb-2 p-3 rounded ") }} {% for error
+        in field.errors %}
+        <span class="from-text text-danger">{{ error }} </span> {% endfor %}
+      </p>
+      {% endfor %}
+      <button class="btn btn-lg bg-dark text-light shadow" type="submit">
+        Search now
+      </button>
+      {% if not g.user %}
+      <span class="ms-4"><a href="/">Home</a></span>
+      <span class="ms-3"><a href="/signup">Join Us</a></span>
+      <span class="ms-3"><a href="/login">Login</a></span>
+      {% else %}
+      <span class="ms-4"><a href="/">Home</a></span>
+      <span class="ms-3"><a href="/profile">Profile</a></span>
+      <span class="ms-3"><a href="/logout">Logout</a></span>
+      {% endif %}
+    </form>
+  </div>
+</div>
+<!-- Beginning of the search results -->
+<div class="container mb-5">
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    {% for item in results %}
+    <div class="col rounded shadow">
+      <div class="card flex-row align-items-center">
+        <div class="col-md-4">
+          <a
+            href="{{ item.get('volumeInfo', {}).get('infoLink') }}"
+            target="_blank"
+          >
+            <img
+              src="{{ item.get('volumeInfo', {}).get('imageLinks', {}).get('medium', item.get('volumeInfo', {}).get('imageLinks', {}).get('thumbnail', '#')) }}"
+              class="card-img"
+              alt="Book Cover"
+            />
+          </a>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ item.get('volumeInfo', {}).get('title', 'No Title')
+              |truncate(40) }}
+            </h5>
+            <p class="card-text">
+              {% if item.get('volumeInfo', {}).get('description') %} {{
+              item.get('volumeInfo', {}).get('description')|truncate(70) }} {%
+              if item.get('volumeInfo', {}).get('description')|length > 70 %}
+              <a
+                href="{{ item.get('volumeInfo', {}).get('infoLink') }}"
+                target="_blank"
+                >See more</a
+              >
+
+              {% endif %} {% else %} No description available. {% endif %}
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <a class="text-body-secondary" href="">
+                {{ item.get('volumeInfo', {}).get('authors', ['Unknown
+                Author'])[0] }}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- End the body of homepage -->
+{% endblock %}

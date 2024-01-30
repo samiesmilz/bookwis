@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Workbench&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Darker+Grotesque&family=Inter&family=Libre+Barcode+128+Text&display=swap");
+
+.workbench {
+  font-family: "Workbench", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "BLED" 0, "SCAN" 0;
+}
+
+.inter {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "slnt" 0;
+}
+
+.libre-barcode {
+  font-family: "Libre Barcode 128 Text", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.darker-grotesque {
+  font-family: "Darker Grotesque", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.color1 {
+  background-color: #df6c4f;
+}
+
+.color2 {
+  background-color: #df6c;
+}
+
+.color3 {
+  background-color: #49c5b6;
+}
+
+.color4 {
+  background-color: #c38d9e3b;
+  color: white;
+}
+
+.bg-warning-light {
+  background-color: #ffeeba;
+}
+
+.cover-div {
+  overflow: hidden;
+  height: 250px;
+}
+.cover {
+  width: 100%;
+  overflow: hidden;
+}
