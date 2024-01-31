@@ -210,10 +210,7 @@ def search():
         flash("Please enter a search term.", "danger")
         return redirect("/")
 
-    if g.user:
-        user_id = g.user.id
-    else:
-        user_id = 0
+    user_id = g.user.id if g.user else None
 
     phrase = SearchTerm(term=search_term, user_id=user_id)
     db.session.add(phrase)
