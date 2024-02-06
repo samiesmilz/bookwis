@@ -1,3 +1,4 @@
+
 import os
 import logging
 import requests
@@ -5,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from models import connect_db, User, SearchTerm, db
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from forms import SearchForm, AddUserForm, EditUserForm, LoginForm, EditProfilePicForm
-from flask import Flask, render_template, flash, redirect, request, session, g
+from flask import Flask, Blueprint, render_template, flash, redirect, request, session, g
 from flask import send_from_directory, url_for
 
 app = Flask(__name__, static_folder='static')
@@ -26,25 +27,50 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 
 # Connect to database and create tables
-CURR_USER_KEY = "curr_user"
 connect_db(app)
+
+###################### - Creating a default user / guest user profile ####################
+DEFAULT_USER_ID = 1
+
+
+def setup_default_user():
+    # Provide the necessary details for the default user
+    default_user = User.signup(
+        username="guest",
+        email="guest@bookwis.com",
+        password="guestwis",
+        first_name="Guest",
+        last_name="User",
+        profile_pic=User.profile_pic.default.arg,
+        is_default=True)
+    return default_user
+
 
 # Use app context to create tables
 with app.app_context():
     db.create_all()
+    # Check if default user exists if not create the default user.
+    if not db.session.query(User).filter_by(is_default=True).first():
+        default_user = setup_default_user()
+        db.session.add(default_user)
+        db.session.commit()
 
 # User signup/login/logout
+
+CURR_USER_KEY = "curr_user"
 
 
 @app.before_request
 def add_user_to_g():
-    """If logged in, add curr user to Flask global."""
-    if CURR_USER_KEY in session:
-        g.user = User.query.get(session[CURR_USER_KEY])
+    """
+    # Set a default value for g.user
+    If logged in, add curr user to Flask global."""
+
+    user_id = session.get(CURR_USER_KEY)
+    if user_id:
+        g.user = db.session.get(User, user_id)
     else:
         g.user = None
-    if request.endpoint == 'homepage':
-        g.user = User.query.get(session.get(CURR_USER_KEY))
 
 
 def do_login(user):
@@ -53,10 +79,28 @@ def do_login(user):
 
 
 def do_logout():
-    """Logout user."""
-    if CURR_USER_KEY in session:
-        del session[CURR_USER_KEY]
+    # Get the user id from the session
+    user_id = session.get(CURR_USER_KEY)
 
+    # If no user is logged in, flash a message and redirect to login page
+    if user_id is None:
+        flash("No user is currently logged in.")
+        return redirect(url_for('login'))
+
+    # Retrieve the user from the database
+    user = User.query.get(user_id)
+    if user:
+        print(f"{user.username} logged out")
+
+    # Clear the current user key from the session
+    session.pop(CURR_USER_KEY, None)
+    print(f"{session.get(CURR_USER_KEY)} - in session")
+    # Clear the user object from the global context
+    g.user = None
+    print(f"{g.user} - in global.")
+
+    flash("Logged out successfully!")
+    return redirect(url_for('login'))
 # Route to serve uploaded files
 
 
@@ -83,7 +127,8 @@ def signup():
                 email=form.email.data,
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
-                profile_pic=file_url or User.profile_pic.default.arg
+                profile_pic=file_url or User.profile_pic.default.arg,
+                is_default=False
             )
 
             db.session.commit()
@@ -210,7 +255,10 @@ def search():
         flash("Please enter a search term.", "danger")
         return redirect("/")
 
-    user_id = g.user.id if g.user else None
+    if g.user:
+        user_id = g.user.id
+    else:
+        user_id = DEFAULT_USER_ID
 
     phrase = SearchTerm(term=search_term, user_id=user_id)
     db.session.add(phrase)
@@ -259,6 +307,10 @@ def edit_profile():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/login")
+
+    if g.user.is_default:
+        flash('Cannot edit default user', "warning")
+        return redirect("/profile")
 
     form = EditUserForm(obj=g.user)
     if form.validate_on_submit():
@@ -312,9 +364,19 @@ def update_profile_photo():
 @app.route('/profile/delete', methods=["POST"])
 def delete_user():
     """Delete user."""
-    if not g.user:
+    if g.user is None:
         flash("Access unauthorized.", "danger")
-        return redirect("/")
+        return redirect("/login")
+
+    if g.user.is_default:
+        flash("You are not authorized to delete this user.", "danger")
+        return redirect("/profile")
+
+    user_to_delete_id = request.args.get('user_id')
+    if g.user.id != int(user_to_delete_id):
+
+        flash("You can only delete your own account!")
+        return redirect(url_for('profile'))
 
     do_logout()
 

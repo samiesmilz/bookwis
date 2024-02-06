@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -26,19 +26,20 @@ class User(db.Model):
     profile_pic = db.Column(
         db.String(255), default="/static/default.jpeg", nullable=True)
     search_history = db.relationship('SearchTerm', backref="user")
+    is_default = db.Column(db.Boolean, default=False)
 
     def get_id(self):
         return self.id
 
     @classmethod
-    def signup(cls, username, email, password, first_name, last_name, profile_pic):
+    def signup(cls, username, email, password, first_name, last_name, profile_pic, is_default):
         """Sign up user.
 
         Hashes password and adds user to system.
         """
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
         user = User(username=username, email=email,
-                    password=hashed_pwd, first_name=first_name, last_name=last_name, profile_pic=profile_pic)
+                    password=hashed_pwd, first_name=first_name, last_name=last_name, profile_pic=profile_pic, is_default=is_default)
         db.session.add(user)
         return user
 
@@ -76,4 +77,4 @@ class SearchTerm(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     term = db.Column(db.String())
     timestamp = db.Column(db.DateTime, nullable=False,
-                          default=datetime.utcnow())
+                          default=datetime.now(timezone.utc))

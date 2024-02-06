@@ -55,7 +55,7 @@
 <!-- Beginning of the search results -->
 <div class="container mb-5">
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-    {% for item in results %}
+    {% if results %} {% for item in results %}
     <div class="col rounded shadow">
       <div class="card flex-row align-items-center">
         <div class="col-md-4">
@@ -104,7 +104,7 @@
         </div>
       </div>
     </div>
-    {% endfor %}
+    {% endfor %} {% endif %}
   </div>
 </div>
 
