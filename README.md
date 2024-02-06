@@ -18,6 +18,10 @@ BookWis is a web application that allows users to search and explore books using
 - [Contributing](#contributing)
 - [License](#license)
 
+## Database Schema
+
+![Database Schema](<static/Bookwis Database Schema.png>)
+
 ## Features
 
 - **User Authentication**: Users can sign up, log in, and log out to manage their search history and preferences.
