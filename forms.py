@@ -20,7 +20,7 @@ class AddUserForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     profile_pic = FileField('(Optional) Upload Image', validators=[
-                            FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+                            FileRequired("Please select a photo from your files"), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
 
 
 class LoginForm(FlaskForm):
