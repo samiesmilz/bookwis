@@ -121,26 +121,14 @@ def signup():
                 filename = photos.save(form.profile_pic.data)
                 file_url = url_for('get_file', filename=filename)
 
-            if file_url:
-                profile_pic = file_url
-            else:
-                profile_pic = User.profile_pic.default.arg
-
-            username = form.username.data
-            password = form.password.data
-            email = form.email.data
-            first_name = form.first_name.data
-            last_name = form.last_name.data
-            is_default = False
-
             user = User.signup(
-                username,
-                password,
-                email,
-                first_name,
-                last_name,
-                profile_pic,
-                is_default
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                profile_pic=file_url or User.profile_pic.default.arg,
+                is_default=False
             )
 
             db.session.commit()

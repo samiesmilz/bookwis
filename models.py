@@ -24,7 +24,7 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
     profile_pic = db.Column(
-        db.String(255), default="/static/default.jpeg", nullable=True)
+        db.String(255), default="/static/default.jpeg", nullable=False)
     search_history = db.relationship('SearchTerm', backref="user")
     is_default = db.Column(db.Boolean, default=False)
 
